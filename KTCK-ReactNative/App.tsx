@@ -1,4 +1,4 @@
-import React  from "react";
+import React, { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -6,6 +6,7 @@ import HomeScreen from "./src/screens/HomeScreen";
 import AddExpenseScreen from "./src/screens/AddExpenseScreen";
 import TrashScreen from "./src/screens/TrashScreen";
 import StatisticsScreen from "./src/screens/StatisticsScreen";
+import { syncFromAPI } from "./src/api/mockAPI"; // ⬅️ thêm import này
 
 export type RootStackParamList = { 
   Home: undefined; 
@@ -17,7 +18,11 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
-  return(
+  useEffect(() => {
+    syncFromAPI(); // ⬅️ Gọi khi app khởi động
+  }, []);
+
+  return (
     <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator>
@@ -28,5 +33,5 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
-  )
+  );
 }

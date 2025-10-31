@@ -6,6 +6,7 @@ import { initDB, getExpenses, deleteExpense, Expense } from "../database/db";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../App";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { syncToAPI } from "../api/mockAPI"; // ⬅️ thêm import này
 
 type Nav = NativeStackNavigationProp<RootStackParamList, "Home">;
 
@@ -13,7 +14,7 @@ const HomeScreen: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const [filter, setFilter] = useState<"Tất cả" | "Thu" | "Chi">("Tất cả"); // Dùng cho câu 10 sau
+  const [filter, setFilter] = useState<"Tất cả" | "Thu" | "Chi">("Tất cả");
   const navigation = useNavigation<Nav>();
 
   const loadData = () => setExpenses(getExpenses());
@@ -28,15 +29,15 @@ const HomeScreen: React.FC = () => {
       { text: "Hủy" },
       {
         text: "Xóa",
-        onPress: () => {
+        onPress: async () => {
           deleteExpense(id);
           loadData();
+          await syncToAPI(); // ⬅️ Đồng bộ sau khi xóa
         },
       },
     ]);
   };
 
-  // 🔍 Lọc danh sách theo search + filter
   const filteredExpenses = expenses.filter(
     (item) =>
       item.title.toLowerCase().includes(search.toLowerCase()) &&
@@ -53,7 +54,6 @@ const HomeScreen: React.FC = () => {
     <SafeAreaView style={{ flex: 1, padding: 10 }}>
       <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>EXPENSE TRACKER</Text>
 
-      {/* 🔍 Thanh tìm kiếm */}
       <TextInput
         placeholder="Tìm kiếm khoản thu/chi..."
         style={{
@@ -67,7 +67,6 @@ const HomeScreen: React.FC = () => {
         onChangeText={setSearch}
       />
 
-      {/* 🔘 Bộ lọc Thu/Chi (Câu 10 - chuẩn bị sẵn) */}
       <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 10 }}>
         {["Tất cả", "Thu", "Chi"].map((t) => (
           <Button key={t} title={t} onPress={() => setFilter(t as any)} />

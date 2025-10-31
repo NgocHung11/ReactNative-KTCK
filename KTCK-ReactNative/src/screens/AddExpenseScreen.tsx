@@ -4,6 +4,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { addExpense, updateExpense, getExpenses, Expense } from "../database/db";
 import { RootStackParamList } from "../../App";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { syncToAPI } from "../api/mockAPI"; // ⬅️ thêm import này
 
 type Nav = NativeStackNavigationProp<RootStackParamList, "AddExpense">;
 type Route = RouteProp<RootStackParamList, "AddExpense">;
@@ -27,7 +28,7 @@ const AddExpenseScreen: React.FC = () => {
     }
   }, [route.params]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title || !amount) {
       Alert.alert("Lỗi", "Vui lòng nhập đầy đủ thông tin");
       return;
@@ -45,6 +46,8 @@ const AddExpenseScreen: React.FC = () => {
     } else {
       addExpense(newExpense);
     }
+
+    await syncToAPI(); // ⬅️ Đồng bộ sau khi thêm/sửa
 
     titleRef.current?.clear();
     setAmount("");

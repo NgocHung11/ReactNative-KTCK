@@ -56,12 +56,10 @@ export const deleteExpense = (id: number) => {
   db.runSync("UPDATE expenses SET deleted = 1 WHERE id = ?", [id]);
 };
 
-// ✅ Khôi phục từ thùng rác
 export const restoreExpense = (id: number) => {
   db.runSync("UPDATE expenses SET deleted = 0 WHERE id = ?", [id]);
 };
 
-// ✅ Xóa vĩnh viễn khỏi DB
 export const deleteExpensePermanently = (id: number) => {
   db.runSync("DELETE FROM expenses WHERE id = ?", [id]);
 };
